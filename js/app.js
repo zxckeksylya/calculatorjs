@@ -1,11 +1,9 @@
-
-
 const buttons = document.querySelectorAll('button')
 const stringOfSymbols = document.querySelector('output')
-
+stringOfSymbols.textContent = 0
 var createToolbarButtonHandler = function(e){
     let button = e.currentTarget
-    calc(button.value)
+    stringOfSymbols.textContent = calc(button.value)
     // alert(button.value)
 }
 
@@ -13,8 +11,11 @@ for (let i = 0; i< buttons.length;i++){
     buttons[i].addEventListener('click',createToolbarButtonHandler)
 }
 
-var operation = null
-var saveNumber = null
+var lastOperation = null
+var firstNumber = 0
+var secondNumber = null
+var answer = null
+
 
 function checkDotAtStr(str){
     return str.split('.').length === 2
@@ -26,12 +27,19 @@ function isOverflowOfStr(str){
     return !(stringOfSymbols.textContent.length<10) 
 }
 
+function isOutputZero(){
+    return stringOfSymbols.textContent === '0'
+}
+
 function addSymbolAtString(value,str){
+    if(isOutputZero()){
+        return value
+    }
     if(isOverflowOfStr(str)){
         alert("привешено максимальное число символов")
-    }else{
-        str+= value
-    }        
+        return str
+    }
+    str+= value 
     return str
 }
 
@@ -47,45 +55,76 @@ function addDotAtString(str){
 }
 
 function clearCalc(){
-    operation = null
-    saveNumber = null
-    return ''
+    lastOperation = null
+    firstNumber = 0
+    secondNumber = null
+    return 0
 }
 
-function clearOuterOfCalc(){
-    return ''
+function clearOutputOfCalc(){
+    return 0
 }
-function calc(value){
-    switch(value){
-        case '=':
-            alert(value)
-        break
+function operate(value){
+  if(lastOperation !==value){
+      let bufferNumber = firstNumber
+        lastOperation = value
+        firstNumber = +stringOfSymbols.textContent
+        return 0
+    // }else{
+    //     secondNumber = +stringOfSymbols.textContent
+    //     answer = firstNumber + secondNumber
+    //     if(isOverflowOfStr(String(answer))){
+    //         alert("полученное число превышает регистр калькулятора")
+    //         answer = 0
+    //     }
+    //     return answer
+    }else{
+        return 0
+    }
+}
+function equally(){
+    switch(lastOperation){
         case '+':
-
-        break
+            return isOverflowOfStr(firstNumber + +stringOfSymbols.textContent) 
+            ? 0
+            : firstNumber + +stringOfSymbols.textContent
         case '-':
-
-        break
+            return isOverflowOfStr(firstNumber - +stringOfSymbols.textContent) 
+            ? 0
+            : firstNumber - +stringOfSymbols.textContent
         case '*':
-
-        break
+            return isOverflowOfStr(firstNumber * +stringOfSymbols.textContent) 
+            ? `${firstNumber * +stringOfSymbols.textContent}`.slice(0,10)
+            : firstNumber * +stringOfSymbols.textContent
         case '/':
-
-        break
-        case 'c':
-            stringOfSymbols.textContent = clearCalc()
-        break
-        case 'ce':
-            stringOfSymbols.textContent = clearOuterOfCalc()
-        break
-        case '.':
-            stringOfSymbols.textContent = addDotAtString(stringOfSymbols.textContent)
-        break
-        default:
-            // alert(value)
-            stringOfSymbols.textContent = addSymbolAtString(value,stringOfSymbols.textContent)
-
-        break
+            return isOverflowOfStr(firstNumber / +stringOfSymbols.textContent) 
+            ? `${firstNumber / +stringOfSymbols.textContent}`.slice(0,10)
+            : firstNumber / +stringOfSymbols.textContent
     }
 }
 
+function calc(value){
+    switch(value){
+        case '=':
+            return equally()
+        case '+':
+            return operate(value)
+        case '-':
+            return operate(value)
+        case '*':
+            return operate(value)
+        case '/':
+            return operate(value)
+        case 'c':
+            return clearCalc()
+        case 'ce':
+            alert('ce')
+            return clearOutputOfCalc()
+        case '.':
+            return addDotAtString(stringOfSymbols.textContent)
+        default:
+            // alert(value)
+            return addSymbolAtString(value,stringOfSymbols.textContent)
+
+    }
+}
