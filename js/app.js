@@ -118,7 +118,6 @@ function calc(value){
         case 'c':
             return clearCalc()
         case 'ce':
-            alert('ce')
             return clearOutputOfCalc()
         case '.':
             return addDotAtString(stringOfSymbols.textContent)
